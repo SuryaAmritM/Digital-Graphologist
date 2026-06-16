@@ -1,0 +1,7 @@
+1. We are building a Streamlit app in Python.
+
+2. This project uses purely geometric Computer Vision (OpenCV, scikit-image).
+
+3. DO NOT use or suggest Optical Character Recognition (OCR), Tesseract, or text-translation libraries.
+
+4. Always modularize computer vision logic into separate functions before calling them in app.py.

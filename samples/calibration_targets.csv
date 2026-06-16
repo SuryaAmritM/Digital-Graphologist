@@ -1,0 +1,4 @@
+image_path,expected_band
+data/raw/normal_clean.jpeg,Normal
+data/raw/noisy_shadows.jpeg,Monitor
+data/raw/tremor_broken.jpeg,High Risk

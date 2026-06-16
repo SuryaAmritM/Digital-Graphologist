@@ -1,0 +1,108 @@
+Product Requirements Document (PRD)
+Product Name: Digital Graphologist
+Platform: Streamlit Web Application
+Target Script: Devanagari (Hindi)
+Document Version: 1.0 (Zeroth Review Phase)
+
+1. Product Vision & Objective
+To build a computer vision-based diagnostic web tool that analyzes the geometric structure of handwritten Devanagari script to detect early signs of Dysgraphia. The product shifts the evaluation of handwriting from a subjective visual assessment of "neatness" to an objective, algorithmic measurement of neurological motor-spatial stability.
+
+2. Target Audience
+Primary Users: Government and private school teachers in India.
+
+Secondary Users: Special educators, child psychologists, and parents seeking an initial screening tool before pursuing formal clinical diagnosis.
+
+3. Problem Statement
+Erratic handwriting in Indian classrooms is frequently misdiagnosed as carelessness or laziness. Dysgraphia, a neurological fine-motor disability, goes undetected because clinical assessments are expensive and inaccessible. Current AI/ML tools (like OCR) are actively designed to "fix" or ignore messy writing to read the text, and they are optimized for linear English letters rather than the complex, hanging architecture of Indian scripts.
+
+4. Product Scope
+In-Scope (Phase 1 / Prototype):
+
+A Streamlit web dashboard for image upload and result visualization.
+
+Processing of static images (JPEG/PNG) of handwritten notebooks.
+
+Core Computer Vision pipeline: Adaptive Thresholding and Topological Skeletonization.
+
+Geometric analysis of Devanagari "Anchor Points" (Shirorekha continuity and hanging attachments).
+
+Generation of a quantitative "Structural Integrity Score."
+
+Out-of-Scope (Phase 1):
+
+Optical Character Recognition (OCR) or text translation.
+
+Real-time camera processing (video streams).
+
+Support for scripts other than Devanagari (Tamil, English, etc., are deferred to later phases).
+
+Native iOS/Android app deployment.
+
+5. User Journey & Flow
+Upload: The user opens the Streamlit web app in their browser and uploads an image of a student's Hindi dictation notebook.
+
+Processing: The system displays a loading state while the image passes through the backend CV pipeline (approx. 2-5 seconds).
+
+Visualization: The dashboard displays a side-by-side comparison: the original image on the left, and the extracted "X-Ray" wireframe on the right.
+
+Diagnosis: Below the images, the system highlights fragmented Shirorekhas or floating letters in red bounding boxes.
+
+Verdict: The system outputs the final "Structural Integrity Score" (0-100) and a color-coded diagnostic alert (e.g., Red for High Risk, Green for Normal).
+
+6. Functional Requirements (The Engineering Pipeline)
+Module 1: Image Preprocessing (The Cleaner)
+Requirement: The system must isolate pen ink from background noise.
+
+Logic: Apply Adaptive Thresholding (e.g., Sauvola binarization) to remove ruled notebook lines, uneven lighting, shadows, and paper textures.
+
+Output: A binary image (pure black ink on a pure white background).
+
+Module 2: Feature Extraction (The X-Ray)
+Requirement: The system must expose micro-tremors and structural breaks hidden by thick ink strokes.
+
+Logic: Apply the Zhang-Suen Topological Skeletonization algorithm iteratively to reduce the ink strokes to a 1-pixel thickness while maintaining geometric connectivity.
+
+Output: A structural wireframe of the text.
+
+Module 3: Vernacular Structural Analysis (The Engineer)
+Requirement: The system must analyze specific Devanagari geometric rules using Connected-Component Labeling (CCL) and contour mapping.
+
+Rule A (Shirorekha Integrity): Identify the top horizontal zone of a word cluster. Calculate the ratio of continuous ink pixels to breaks. Flag fragmentation.
+
+Rule B (Hanging Attachment): Verify that the primary consonant bodies (components below the Shirorekha) physically intersect with the Shirorekha component. Flag "floating" letters.
+
+Module 4: Scoring Engine
+Requirement: The system must quantify the geometric errors.
+
+Logic: Start with a base score of 100. Deduct points based on the severity and frequency of Rule A and Rule B violations.
+
+Thresholds:
+
+90-100: Normal variations (No flag).
+
+60-89: Mild structural issues (Monitor).
+
+< 60: Structural Failure (High Risk of Dysgraphia flag).
+
+7. Non-Functional Requirements
+Performance: The complete pipeline (upload to score generation) must execute in under 5 seconds on standard CPU hardware to ensure usability in a classroom setting.
+
+Usability: The Streamlit interface must be intuitive, requiring zero technical or clinical training to operate.
+
+Explainability: The visual "X-Ray" must clearly show the teacher why the score was given by highlighting the physical breaks in the handwriting.
+
+8. Technology Stack
+Frontend/UI: Streamlit (Python library for rapid web app deployment).
+
+Core Processing Engine: Python 3.x.
+
+Computer Vision Libraries: OpenCV (cv2) for morphological operations and contouring; scikit-image for skeletonization.
+
+Data Manipulation: NumPy for matrix operations on image pixel arrays.
+
+9. Data Strategy for Development
+Training (Normal Geometry): Devanagari Handwritten Character Dataset (DHCD) from Kaggle. Used to calibrate baseline Connected-Component labeling for perfect Hindi characters.
+
+Testing (Tremor/Breakage Geometry): Parkinson's Disease Handwriting Database (HandPD) from Kaggle. Used to validate the sensitivity of the Zhang-Suen skeletonization.
+
+System Validation (Real-World Benchmark): A custom dataset of 20-30 smartphone photos of Hindi dictation notebooks. Half written normally; half written with the non-dominant hand to organically simulate the motor-spatial breakdown of Dysgraphia.
